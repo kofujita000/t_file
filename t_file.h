@@ -6,14 +6,16 @@
 /*   By: kofujita <kofujita@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/21 16:42:22 by kofujita          #+#    #+#             */
-/*   Updated: 2024/08/17 12:19:56 by kofujita         ###   ########.fr       */
+/*   Updated: 2024/08/24 18:02:59 by kofujita         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef T_FILE_H
-#define T_FILE_H
+# define T_FILE_H
+
 # include <unistd.h>
 # include <fcntl.h>
+# include <limits.h>
 
 # include "../t_string/t_string.h"
 

@@ -6,7 +6,7 @@
 /*   By: kofujita <kofujita@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/02 19:04:53 by kofujita          #+#    #+#             */
-/*   Updated: 2024/08/03 17:26:08 by kofujita         ###   ########.fr       */
+/*   Updated: 2024/08/24 17:49:28 by kofujita         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,22 +22,23 @@
  * r. int -> [0 => 処理成功] / [1 => 処理失敗]
  */
 static int	prcess1(
-		t_file *tf,
-		t_string *df,
-		const char *pnt);
+				t_file *tf,
+				t_string *df,
+				const char *pnt);
 
 /**
  * 読み込み情報に存在しない場合の処理
  *
  * 1. t_file* -> 引数で渡された情報
  * 2. t_string* -> 引数で渡された情報
- * 3. const char* -> 存在した場所
+ * 3. const char -> 探したい文字情報
  *
  * r. int -> [0 => 処理成功] / [1 => 処理失敗]
  */
 static int	prcess2(
-		t_file *tf,
-		t_string *df);
+				t_file *tf,
+				t_string *df,
+				const char chr);
 
 size_t	t_file_getline(
 			t_file *tf,
@@ -52,7 +53,7 @@ size_t	t_file_getline(
 	if (pnt)
 		res = prcess1(tf, df, pnt);
 	else
-		res = prcess2(tf, df);
+		res = prcess2(tf, df, chr);
 	return (res);
 }
 
@@ -74,28 +75,30 @@ int	prcess1(
 
 int	prcess2(
 		t_file *tf,
-		t_string *df)
+		t_string *df,
+		const char chr)
 {
 	char			*begin;
-	const char		*end;
-	int				res;
+	ssize_t			res;
 
-	res = 1;
+	const char *(end), *(pnt) = 0x00;
 	begin = t_string_data(tf->__stk);
 	end = begin + t_string_length(tf->__stk);
-	df = t_string_set(df, begin, end);
-	if (!df)
+	if (!t_string_set(df, begin, end))
 		return (1);
-	t_string_clear(tf->__stk);
-	t_string_clear(df);
-	while(1)
+	while (!pnt)
 	{
 		res = read(tf->__fd, begin, T_FILE_BUFFER_SIZE);
 		if (res == -1)
 			return (1);
 		if (!res)
 			break ;
-		df = t_string_append(df, begin, begin + res);
+		tf->__stk->__length = res;
+		pnt = t_string_find(tf->__stk, chr);
+		if (!pnt)
+			df = t_string_append(df, begin, begin + res);
+		else
+			df = t_string_append(df, begin, pnt);
 		if (!df)
 			return (1);
 	}

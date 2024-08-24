@@ -6,18 +6,14 @@
 #    By: kofujita <kofujita@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/07/17 20:29:24 by kofujita          #+#    #+#              #
-#    Updated: 2024/08/23 19:32:00 by kofujita         ###   ########.fr        #
+#    Updated: 2024/08/24 18:27:03 by kofujita         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-NAME        := t_file.a
+NAME        := tests
 CFLAGS      := -Wall -Wextra -Werror
 
-SRCS		:= ./srcs/open.c \
-			   ./srcs/close.c \
-			   ./srcs/getc.c \
-			   ./srcs/gets.c \
-			   ./srcs/getline.c
+SRCS		:=
 
 OBJS_DIR	:= objs
 OBJS		:= $(SRCS:%.c=$(OBJS_DIR)/%.o)
@@ -27,6 +23,7 @@ CC          := cc
 RM          := rm -rf
 CP          := cp -r
 MKDIR       := mkdir -p
+MAKE        := make
 
 INSTALL_DIR := /usr/local
 
@@ -38,36 +35,30 @@ BAR_LENGTH := 40
 .PHONY :
 	all clean fclean re install
 
-$(OBJS_DIR)/%.o: %.c
-	@$(MKDIR) $(OBJS_DIR) $(OBJS_DIR)/srcs
-	@$(CC) $(CFLAGS) $(INCLUDE_DIR) -o $@ -c $<
-	@$(eval PROGRESS=$(shell echo $$(($(PROGRESS) + 1))))
-	@PERCENTAGE=$$(($(PROGRESS) * 100 / $(SRCS_COUNT))) ; \
-	BAR=$$(($(BAR_LENGTH) * $$PERCENTAGE / 100)) ; \
-	SPACES=$$(($(BAR_LENGTH) - $$BAR)) ; \
-	printf "\r\033[K" ; \
-	printf "Progress: [" ; \
-	for i in $$(seq 1 $$BAR); do printf "="; done ; \
-	printf ">" ; \
-	for i in $$(seq 1 $$SPACES); do printf " "; done ; \
-	printf "] $$PERCENTAGE%% ($@)"
-
-$(NAME) : $(OBJS)
-	@$(AR) $(NAME) $(OBJS)
-	@echo Created $(NAME)
+$(NAME):
+	@$(MKDIR) lib include
+	@$(MAKE) -C .. install "INSTALL_DIR=./tests"
+	@$(MAKE) -C ../../t_string install "INSTALL_DIR=../t_file/tests"
+	@$(CC) -o 00_test_t_file_open 00_test_t_file_open.c ./lib/t_file.a ./lib/t_string.a
+	@$(CC) -o 01_test_t_file_getc 01_test_t_file_getc.c ./lib/t_file.a ./lib/t_string.a
+	@$(CC) -o 02_test_t_file_getline 02_test_t_file_getline.c ./lib/t_file.a ./lib/t_string.a
+	@$(CC) -o 03_test_t_file_gets 03_test_t_file_gets.c ./lib/t_file.a ./lib/t_string.a
 
 all : $(NAME)
 
 clean :
-	@$(RM) $(OBJS_DIR)
-	@echo Deleted OBJS
+	@$(RM) 00_test_t_file_open
+	@$(RM) 01_test_t_file_getc
+	@$(RM) 02_test_t_file_getline
+	@$(RM) 03_test_t_file_gets
+	@echo Deleted
 
 fclean : clean
-	@$(RM) $(NAME)
-	@echo Deleted $(NAME)
+	@$(RM) include lib
+	@echo Deleted
 
 re : fclean all
 
 install : all
 	@$(CP) $(NAME) $(INSTALL_DIR)/lib
-	@$(CP) t_file.h $(INSTALL_DIR)/include
+	@$(CP) t_string.h $(INSTALL_DIR)/include
