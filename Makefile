@@ -6,11 +6,11 @@
 #    By: kofujita <kofujita@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/07/17 20:29:24 by kofujita          #+#    #+#              #
-#    Updated: 2024/08/23 19:32:00 by kofujita         ###   ########.fr        #
+#    Updated: 2024/09/16 22:44:36 by kofujita         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-NAME        := t_file.a
+NAME        := libtfile.a
 CFLAGS      := -Wall -Wextra -Werror
 
 SRCS		:= ./srcs/open.c \
@@ -69,5 +69,7 @@ fclean : clean
 re : fclean all
 
 install : all
+    @$(MKDIR) $(INSTALL_DIR)/lib
+    @$(MKDIR) $(INSTALL_DIR)/include
 	@$(CP) $(NAME) $(INSTALL_DIR)/lib
 	@$(CP) t_file.h $(INSTALL_DIR)/include
